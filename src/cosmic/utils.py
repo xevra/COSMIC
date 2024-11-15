@@ -1139,7 +1139,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
 
     flag = "windflag"
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1, 2, 3, 4]:
+        if BSEDict[flag] not in [0, 1, 2, 3, 4, 5, 6, 7]:
             raise ValueError(
                 "'{0:s}' needs to be set to either 0, 1, 2, or 3, 4 (you set it to '{1:d}')".format(
                     flag, BSEDict[flag]
@@ -1393,7 +1393,7 @@ def error_check(BSEDict, filters=None, convergence=None, sampling=None):
 
     flag = "remnantflag"
     if flag in BSEDict.keys():
-        if BSEDict[flag] not in [0, 1, 2, 3, 4]:
+        if BSEDict[flag] not in [0, 1, 2, 3, 4, 5]:
             raise ValueError(
                 "'{0:s}' needs to be set to either 0, 1, 2, 3, or 4 (you set it to '{1:d}')".format(
                     flag, BSEDict[flag]

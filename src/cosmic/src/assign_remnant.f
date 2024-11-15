@@ -13,6 +13,7 @@
       real*8 mc,mcbagb,mass,mt
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 mcx, bhspin,mrem,mch
+      real*8 fmix, mcritnsbh, mtemp1, mtemp2
       integer kw,kidx
 
       
@@ -216,6 +217,61 @@
                         mt = mcx + fallback*(mt - mcx)
                      elseif(mc.ge.11.d0)then
                         fallback = 1.d0
+                     endif
+                     if(bhspinflag.eq.0)then
+                            bhspin = bhspinmag
+                     elseif(bhspinflag.eq.1)then
+                            bhspin = ran3(idum1) * bhspinmag
+                     elseif(bhspinflag.eq.2)then
+                         if(mc.le.13.d0)then
+                             bhspin = 0.9d0
+                         elseif(mc.lt.27.d0)then
+                             bhspin = -0.064d0*mc + 1.736d0
+                         else
+                             bhspin = 0.0d0
+                         endif
+                     endif
+                     mc = mt
+                  elseif(remnantflag.eq.5)then
+*
+* Use the Fryer et al. 2022 SN Prescription
+*
+*                    For this, we just set the proto-core mass to one
+                     if(mc.le.3.5d0)then
+                        mcx = 1.2d0
+                     elseif(mc.le.6.d0)then
+                        mcx = 1.3d0
+                     elseif(mc.le.11.d0)then
+                        mcx = 1.4d0
+                     elseif(mc.gt.11.d0)then
+                        mcx = 1.6d0
+                     endif
+
+                     if(ecsn.gt.0.d0.and.mcbagb.le.ecsn.and.
+     &                    mcbagb.ge.ecsn_mlow)then
+                        mt = 1.38d0   ! ECSN fixed mass, no fallback
+                     else
+* Parameters of Fryer2022 model
+                        fmix=1.0
+                        mcritnsbh=5.75
+* We need mt in multiple places, so temp1 will be the working mt
+                        mtemp1=mt
+* mtemp2 is the calculated value of the remnant mass
+                        mtemp2=1.2 + (0.05*fmix) + 
+     &                      (0.01*((mc/fmix)**2)) +
+     &                      EXP(fmix*(mc-mcritnsbh))
+* We don't care about mtemp2 if it's less than zero
+                        if(mtemp2.lt.0.)then
+                            mtemp1 = 0.
+                            kw=15
+* We only care about mtemp2 if it is less than the total
+*   mass of the star
+                        elseif(mtemp2.lt.mt)then
+                            mtemp1 = mtemp2
+* If mtemp2 is less, we also want to estimate the fallback fraction
+                            fallback=(mtemp1-mcx)/(mt-mcx)
+                            mt = mcx + fallback*(mtemp1 - mcx)
+                        endif
                      endif
                      if(bhspinflag.eq.0)then
                             bhspin = bhspinmag
