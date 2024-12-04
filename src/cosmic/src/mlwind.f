@@ -200,14 +200,14 @@
          if (windflag.eq.6) then
             dms = -5.52d0 + 2.39d0*LOG10(lum/1.0d+06) -
      &          1.48*LOG10(mt/45.0d0) + 2.12d0 *LOG10(teff/4.5d+04) - 
-     &          (0.75d+0 - 1.87d0*LOG10(teff/4.5d+04))*LOG10(z/zsun)
+     &          (0.75d+0 - 1.87d0*LOG10(teff/4.5d+04))*LOG10(z/0.014d0)
             dms = 10.0d0**dms
          endif
 * Kticka, Kubat, Kritckova 2023 10.48550/arXiv.2311.01257
          if (windflag.eq.7) then
-            dms = -13.82d0 + 0.358d0*LOG10(z/zsun) + 
-     &          (1.52d0 - 0.11d0*LOG10(z/zsun))*LOG10(lum/1.0d+06) +
-     &          13.82d0*LOG10((1.0d0 + 0.73*LOG10(z/zsun))*EXP(
+            dms = -13.82d0 + 0.358d0*LOG10(z/0.0134d0) + 
+     &          (1.52d0 - 0.11d0*LOG10(z/0.0134d0))*LOG10(lum/1.0d+06) +
+     &          13.82d0*LOG10((1.0d0 + 0.73*LOG10(z/0.0134d0))*EXP(
      &          -1.0d0 * (teff - 1.416d+4)**2 / (3.58d+3)**2) +
      &          3.84d0*EXP(-1.0d0*(teff-3.790d+04)**2 / (5.65d+04)**2))
             dms = 10.0d0**dms
