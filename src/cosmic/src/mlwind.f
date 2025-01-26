@@ -198,12 +198,12 @@
          endif
 * Bjorklund 2023 https://doi.org/10.1051/0004-6361/202141948
          if (windflag.eq.6) then
-            dms = -5.52d0 + 2.39d0*LOG10(lum/1.0d+06) -
+            dms = -5.52d0 + 2.39d0*LOG10(lum/1.0d+06) +
      &          1.48*LOG10(mt/45.0d0) + 2.12d0 *LOG10(teff/4.5d+04) - 
      &          (0.75d+0 - 1.87d0*LOG10(teff/4.5d+04))*LOG10(z/zsun)
             dms = 10.0d0**dms
          endif
-* Kticka, Kubat, Kritckova 2023 10.48550/arXiv.2311.01257
+* Kritcka, Kubat, Kritckova 2023 10.48550/arXiv.2311.01257
          if (windflag.eq.7) then
             dms = -13.82d0 + 0.358d0*LOG10(z/zsun) + 
      &          (1.52d0 - 0.11d0*LOG10(z/zsun))*LOG10(lum/1.0d+06) +
