@@ -15,6 +15,7 @@
       real*8 mc,mcbagb,mass,mt
       real*8 frac,kappa,sappa,alphap,polyfit
       real*8 mcx, bhspin,mrem,mch
+      real*8 fmix, mcritnsbh, mtemp1, mtemp2
       integer kw,kidx
 
       
@@ -89,6 +90,37 @@
 *
                   kw = 15
                else
+* Beginning of supernova block
+*
+* Chris Belczynski Evolutionary Roads Weak PPISN
+* This has to happen before the SNa, because it modifies
+* the properties of the star during explosion
+                  if(pisn.eq.-4.and.mt.ge.45d0)then
+                    if(mcbagb.ge.65d0) then
+                      mt = 0.d0
+                      kw = 15
+                    else
+* PPISN
+                      if(mcbagb.ge.60d0) then
+                        mtemp1 = 938d0 - (14.3d0*mcbagb)
+                      elseif(mcbagb.ge.40d0) then
+                        mtemp1 = 55.6d0
+                      else
+                        mtemp1 = 6.0d0 + (0.83d0*mcbagb)
+                      endif
+* Update mass
+                      if(mt.gt.mtemp1) then
+                        mt = mtemp1
+                      endif
+                      if(mcbagb.gt.mtemp1) then
+                        mcbagb = mtemp1
+                      endif
+                      if(mc.gt.mtemp1) then
+                        mc = mtemp1
+                      endif
+                    endif
+                  endif
+* Carry on with the Supernovae
                   if(remnantflag.eq.0)then
                      mt = 1.17d0 + 0.09d0*mc
                   elseif(remnantflag.eq.1)then
@@ -222,6 +254,61 @@
                         mt = mcx + fallback*(mt - mcx)
                      elseif(mc.ge.11.d0)then
                         fallback = 1.d0
+                     endif
+                     if(bhspinflag.eq.0)then
+                            bhspin = bhspinmag
+                     elseif(bhspinflag.eq.1)then
+                            bhspin = ran3(idum1) * bhspinmag
+                     elseif(bhspinflag.eq.2)then
+                         if(mc.le.13.d0)then
+                             bhspin = 0.9d0
+                         elseif(mc.lt.27.d0)then
+                             bhspin = -0.064d0*mc + 1.736d0
+                         else
+                             bhspin = 0.0d0
+                         endif
+                     endif
+                     mc = mt
+                  elseif(remnantflag.eq.5)then
+*
+* Use the Fryer et al. 2022 SN Prescription
+*
+*                    For this, we just set the proto-core mass to one
+                     if(mc.le.3.5d0)then
+                        mcx = 1.2d0
+                     elseif(mc.le.6.d0)then
+                        mcx = 1.3d0
+                     elseif(mc.le.11.d0)then
+                        mcx = 1.4d0
+                     elseif(mc.gt.11.d0)then
+                        mcx = 1.6d0
+                     endif
+
+                     if(ecsn.gt.0.d0.and.mcbagb.le.ecsn.and.
+     &                    mcbagb.ge.ecsn_mlow)then
+                        mt = 1.38d0   ! ECSN fixed mass, no fallback
+                     else
+* Parameters of Fryer2022 model
+                        fmix=1.0
+                        mcritnsbh=5.75
+* We need mt in multiple places, so temp1 will be the working mt
+                        mtemp1=mt
+* mtemp2 is the calculated value of the remnant mass
+                        mtemp2=1.2 + (0.05*fmix) + 
+     &                      (0.01*((mc/fmix)**2)) +
+     &                      EXP(fmix*(mc-mcritnsbh))
+* We don't care about mtemp2 if it's less than zero
+                        if(mtemp2.lt.0.)then
+                            mtemp1 = 0.
+                            kw=15
+* We only care about mtemp2 if it is less than the total
+*   mass of the star
+                        elseif(mtemp2.lt.mt)then
+                            mtemp1 = mtemp2
+* If mtemp2 is less, we also want to estimate the fallback fraction
+                            fallback=(mtemp1-mcx)/(mt-mcx)
+                            mt = mcx + fallback*(mtemp1 - mcx)
+                        endif
                      endif
                      if(bhspinflag.eq.0)then
                             bhspin = bhspinmag
