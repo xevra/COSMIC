@@ -206,11 +206,6 @@ if __name__ == '__main__':
 
     # Check masses
     if SSEDict["stellar_engine"] == "metisse":
-<<<<<<< HEAD
-        # Check m1_min
-        if args.m1_min < 0.1:
-            m1_min = 0.1
-=======
         # load in the METISSE files
         metisse_m_min, metisse_m_max = read_tracks_for_METISSE(
              path_to_tracks=SSEDict["path_to_tracks"], 
@@ -221,7 +216,6 @@ if __name__ == '__main__':
         # Check m1_min
         if args.m1_min < metisse_m_min:
             m1_min = metisse_m_min
->>>>>>> cosmic/develop
         else:
             m1_min = args.m1_min
         # Check m2_min
